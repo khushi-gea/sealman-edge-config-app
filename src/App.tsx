@@ -20,6 +20,7 @@ import ExtensionsSettings from "./features/Extensions/ExtensionsSettings";
 import ExtensionDetail from "./features/Extensions/ExtensionDetail";
 import RegisterExtensionPage from "./features/Extensions/RegisterExtensionPage";
 import EditExtensionPage from "./features/Extensions/EditExtensionPage";
+import ExtensionUiPage from "./features/Extensions/ExtensionUiPage";
 import { useAuth } from "./auth";
 import { useEffect } from "react";
 import { NewUserCheck } from "./components/NewUserCheck";
@@ -93,6 +94,7 @@ export default function App() {
             <Route path="settings" element={<SettingsLayout />}>
               <Route path="platform-types" element={<PlatformTypesSettings />} />
               <Route path="templates" element={<TemplatesSettings />} />
+              <Route path="extension-ui/:name" element={<ExtensionUiPage />} />
               <Route path="extensions" element={<Outlet />}>
                 <Route index element={<ExtensionsSettings />} />
                 <Route path="new" element={<RegisterExtensionPage />} />
@@ -103,6 +105,7 @@ export default function App() {
               </Route>
               {/* <Route path="smartems" element={<SmartEmsSettings />} /> */}
             </Route>
+            <Route path="extension-ui/:name" element={<ExtensionUiPage />} />
             <Route path="user/profile" element={<UserProfile />} />
             <Route path="version" element={<Version />} />
             <Route path="*" element={<PageNotFound />} />

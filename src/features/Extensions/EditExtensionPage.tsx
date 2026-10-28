@@ -11,6 +11,7 @@ import { ExtensionFormFields } from "./ExtensionFormFields";
 import { extensionErrorMessages } from "./extensionErrors";
 import { draftFromRegistration, draftToRegistration, emptyDraft, type ExtensionFormDraft } from "./extensionFormTypes";
 import { downloadDraftAsManifest } from "./exportManifest";
+import { saveExtensionUiConfig } from "./extensionUi";
 
 export default function EditExtensionPage() {
   const { name } = useParams<{ name: string }>();
@@ -116,7 +117,8 @@ export default function EditExtensionPage() {
         open={importOpen}
         onOpenChange={setImportOpen}
         lockedName={extension.name}
-        onApply={(next) => {
+        onApply={(next, uiConfig) => {
+          saveExtensionUiConfig(extension.name, uiConfig);
           setDraft(next);
           setErrors([]);
           toast.info("Form updated from registration file - review and save when ready");

@@ -10,6 +10,7 @@ import { ExtensionFormFields } from "./ExtensionFormFields";
 import { extensionErrorMessages } from "./extensionErrors";
 import { draftFromRegistration, draftToRegistration, emptyDraft, type ExtensionFormDraft } from "./extensionFormTypes";
 import type { ExtensionRegistration } from "./types";
+import { saveExtensionUiConfig, uiConfigFromManifest, type ExtensionUiConfig } from "./extensionUi";
 
 interface JsonImportStepProps {
   /** null means "no manifest to apply" (skip, or continue with an empty textarea). */
@@ -95,8 +96,10 @@ export default function RegisterExtensionPage() {
   const [step, setStep] = useState<"import" | "form">("import");
   const [draft, setDraft] = useState<ExtensionFormDraft>(emptyDraft());
   const [errors, setErrors] = useState<string[]>([]);
+  const [uiConfig, setUiConfig] = useState<ExtensionUiConfig | null>(null);
 
   function handleImportContinue(json: unknown | null) {
+    setUiConfig(json === null ? null : uiConfigFromManifest(json));
     if (json !== null) {
       try {
         setDraft(draftFromRegistration(json as ExtensionRegistration));
@@ -123,6 +126,7 @@ export default function RegisterExtensionPage() {
     setErrors([]);
     try {
       await registerExtension.mutateAsync({ body: result.registration });
+      saveExtensionUiConfig(result.registration.name, uiConfig);
       toast.success(`Extension "${result.registration.name}" registered`);
       navigate("..");
     } catch (e) {

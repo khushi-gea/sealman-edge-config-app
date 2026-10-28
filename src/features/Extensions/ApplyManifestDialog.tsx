@@ -13,13 +13,14 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { draftFromRegistration, type ExtensionFormDraft } from "./extensionFormTypes";
 import type { ExtensionRegistration } from "./types";
+import { uiConfigFromManifest, type ExtensionUiConfig } from "./extensionUi";
 
 interface ApplyManifestDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   /** Locked name of the extension being edited - kept even if the file says otherwise. */
   lockedName: string;
-  onApply: (draft: ExtensionFormDraft) => void;
+  onApply: (draft: ExtensionFormDraft, uiConfig: ExtensionUiConfig | null) => void;
 }
 
 export function ApplyManifestDialog({ open, onOpenChange, lockedName, onApply }: ApplyManifestDialogProps) {
@@ -74,7 +75,7 @@ export function ApplyManifestDialog({ open, onOpenChange, lockedName, onApply }:
     if (fileName && fileName !== lockedName) {
       toast.info(`File name "${fileName}" ignored - this extension stays "${lockedName}"`);
     }
-    onApply({ ...next, name: lockedName });
+    onApply({ ...next, name: lockedName }, uiConfigFromManifest(parsed));
     handleOpenChange(false);
   }
 

@@ -11,6 +11,8 @@ import { Fragment, useMemo } from "react";
 import { useAuth } from "@/auth";
 import { usePermissions } from "@/features/authorization/permissions/use-permissions";
 import { PERMISSION_KEYS } from "@/features/authorization/permissions/permission-keys";
+import { useListExtensions } from "@/generated/edge-administration/hooks/useExtensions";
+import { useExtensionUiRegistry } from "@/features/Extensions/extensionUi";
 
 interface INavigation {
   name: string;
@@ -20,6 +22,8 @@ interface INavigation {
 
 export default function NavigationBar() {
   const auth = useAuth();
+  const { data: extensions } = useListExtensions();
+  const extensionUiRegistry = useExtensionUiRegistry();
   const { hasPermission: hasAuthorizationReadPermission, isLoading: isPermissionsLoading } = usePermissions({
     permissionKey: PERMISSION_KEYS.PLATFORM_AUTHORIZATION_READ,
   });
@@ -43,6 +47,17 @@ export default function NavigationBar() {
       },
     ];
 
+    for (const extension of extensions ?? []) {
+      const ui = extensionUiRegistry[extension.name];
+      if (extension.enabled && ui?.placement.slot === "top-nav") {
+        items.push({
+          name: ui.placement.label || extension.name,
+          href: `/extension-ui/${encodeURIComponent(extension.name)}`,
+          current: true,
+        });
+      }
+    }
+
     if (!isPermissionsLoading && hasAuthorizationReadPermission) {
       items.push({
         name: "Authorization",
@@ -52,7 +67,7 @@ export default function NavigationBar() {
     }
 
     return items;
-  }, [hasAuthorizationReadPermission, isPermissionsLoading]);
+  }, [extensions, extensionUiRegistry, hasAuthorizationReadPermission, isPermissionsLoading]);
 
   const initials = useMemo(() => {
     return auth.user?.name?.split(" ").map(n => n[0]).join("") || "";

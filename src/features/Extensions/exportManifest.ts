@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 import { draftToRegistration, type ExtensionFormDraft } from "./extensionFormTypes";
 import type { ExtensionRegistration, RouteSpec } from "./types";
+import { getExtensionUiConfig } from "./extensionUi";
 
 /** A body_ref route's schema snapshot comes from the upstream, not the author. Strip
  * it so re-import stays a valid POST body. */
@@ -30,7 +31,9 @@ export function downloadDraftAsManifest(draft: ExtensionFormDraft): { ok: boolea
     toast.error(result.errors[0] ?? "Fix the form before downloading a registration file.");
     return { ok: false, errors: result.errors };
   }
-  const manifest = toAuthorManifest(result.registration);
+  const baseManifest = toAuthorManifest(result.registration);
+  const ui = getExtensionUiConfig(baseManifest.name);
+  const manifest = ui ? { ...baseManifest, ui } : baseManifest;
   const json = `${JSON.stringify(manifest, null, 2)}\n`;
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
