@@ -1370,6 +1370,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/devices/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search Devices Route */
+        get: operations["search_devices_route_devices_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/devices/{device_id}": {
         parameters: {
             query?: never;
@@ -2067,6 +2084,51 @@ export interface components {
         DeviceScanPortsAdd: {
             /** Ports */
             ports: number[];
+        };
+        /**
+         * DeviceSearchMatch
+         * @description What matched on a device. `endpoint_*` and `service_id` are set for endpoint and service
+         *     matches (a service match also names the endpoint it belongs to).
+         */
+        DeviceSearchMatch: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "device_id" | "metadata" | "endpoint" | "service";
+            /** Fields */
+            fields: components["schemas"]["DeviceSearchMatchField"][];
+            /** Endpoint Id */
+            endpoint_id?: string | null;
+            /** Endpoint Name */
+            endpoint_name?: string | null;
+            /** Type Label */
+            type_label?: string | null;
+            /** Service Id */
+            service_id?: string | null;
+        };
+        /** DeviceSearchMatchField */
+        DeviceSearchMatchField: {
+            /** Key */
+            key?: string | null;
+            /** Label */
+            label: string;
+            /** Value */
+            value: string;
+        };
+        /** DeviceSearchResponse */
+        DeviceSearchResponse: {
+            /** Total */
+            total: number;
+            /** Items */
+            items: components["schemas"]["DeviceSearchResult"][];
+        };
+        /** DeviceSearchResult */
+        DeviceSearchResult: {
+            /** Device Id */
+            device_id: string;
+            /** Matches */
+            matches: components["schemas"]["DeviceSearchMatch"][];
         };
         /** DeviceSecretInformation */
         DeviceSecretInformation: {
@@ -7932,6 +7994,44 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    search_devices_route_devices_search_get: {
+        parameters: {
+            query?: {
+                /** @description Match device ids */
+                device_id?: string[] | null;
+                /** @description Match metadata values */
+                metadata?: string[] | null;
+                /** @description Match endpoint values */
+                endpoint?: string[] | null;
+                /** @description Match service values */
+                service?: string[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceSearchResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -224,9 +224,9 @@ export default function DevicesByCountry({ onSelectChanged, refreshKey }: Device
 
   return (
     <Menu as="div" className="relative inline-block">
-      <Badge color={BadgeColor.Yellow}>
+      {/* <Badge color={BadgeColor.Yellow}>
         <Menu.Button>Countries {selectedCount !== 0 ? <>({selectedCount})</> : null}</Menu.Button>
-      </Badge>
+      </Badge> */}
       <Transition
         as={Fragment}
         enter="transition ease-out duration-100"

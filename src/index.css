@@ -59,6 +59,7 @@
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-sweep: sweep 5s ease-in-out infinite;
   --animate-breathe: breathe 3s ease-in-out infinite;
+  --animate-search-highlight: search-highlight 1.2s ease-in-out 3;
 
   @keyframes sweep {
     0% {
@@ -76,6 +77,18 @@
     }
     50% {
       opacity: 1;
+    }
+  }
+
+  @keyframes search-highlight {
+    0%,
+    100% {
+      background-color: transparent;
+      box-shadow: inset 0 0 0 0 transparent;
+    }
+    50% {
+      background-color: rgb(219 234 254);
+      box-shadow: inset 0 0 0 2px rgb(59 130 246);
     }
   }
 

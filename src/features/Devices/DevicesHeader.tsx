@@ -73,9 +73,9 @@ export default function DevicesHeader({
           )
         }
       />
-      {showGeolocationInfo ? (
+      {/* {showGeolocationInfo ? (
         <Badge color={BadgeColor.Gray}>{missingGeolocationCount} Missing Geolocation</Badge>
-      ) : null}
+      ) : null} */}
     </div>
   );
 }

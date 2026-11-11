@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -14,18 +14,39 @@ interface props {
   onCreated: () => void;
   onOpenDetails: (endpointId: string) => void;
   onOpenServiceDetails: (serviceId: string) => void;
+  highlighted?: boolean;
+  onHighlightDone?: () => void;
 }
 
-export default function EndpointAccordionItem({ endpoint, deviceId, onCreated, onOpenDetails, onOpenServiceDetails }: props) {
+const HIGHLIGHT_DURATION_MS = 4000;
+
+export default function EndpointAccordionItem({ endpoint, deviceId, onCreated, onOpenDetails, onOpenServiceDetails, highlighted = false, onHighlightDone }: props) {
   const display = useEndpointDisplay(endpoint);
   const { needsAssignment, isConfigured } = display;
   const [assignEndpointOpen, setAssignEndpointOpen] = useState(false);
   const [assignPort, setAssignPort] = useState<MappedPort | null>(null);
   const [browsing, setBrowsing] = useState<BrowseTarget | null>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const onHighlightDoneRef = useRef(onHighlightDone);
+  useEffect(() => {
+    onHighlightDoneRef.current = onHighlightDone;
+  }, [onHighlightDone]);
+
+  // Scroll to the row and flash it for a few seconds, once.
+  useEffect(() => {
+    if (!highlighted) return;
+    rowRef.current?.scrollIntoView?.({ block: "center", behavior: "smooth" });
+    const timer = setTimeout(() => onHighlightDoneRef.current?.(), HIGHLIGHT_DURATION_MS);
+    return () => clearTimeout(timer);
+  }, [highlighted]);
 
   return (
     <AccordionItem value={endpointListKey(endpoint)} className="last:border-b-0">
-      <div className={`flex items-center pr-4 ${needsAssignment ? "bg-amber-50" : ""}`}>
+      <div
+        ref={rowRef}
+        data-highlighted={highlighted || undefined}
+        className={`flex items-center pr-4 ${needsAssignment ? "bg-amber-50" : ""} ${highlighted ? "animate-search-highlight" : ""}`}
+      >
         <div className="flex-1">
           <AccordionTrigger className="px-4 hover:no-underline hover:bg-muted/40">
             <div className="flex items-center justify-between w-full gap-4">

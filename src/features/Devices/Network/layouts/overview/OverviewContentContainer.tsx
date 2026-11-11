@@ -21,6 +21,7 @@ import EndpointActions from "./EndpointActions";
 import DeviceGatewayCard from "@/features/Devices/Gateway/DeviceGatewayCard";
 import AssetsViewToggle from "./AssetsViewToggle";
 import { AssetsViewMode, loadViewMode, saveViewMode } from "./canvasLayout";
+import { readAssetsHighlight } from "@/features/Devices/DeviceSearch/deviceSearch";
 import { useAuth } from "@/auth";
 import { isForbidden } from "@/lib/errors";
 import { ErrorState } from "@/components/ui/page-state";
@@ -162,8 +163,18 @@ function OverviewContent({ deviceId, contextKey, onRetry }: {
   const [rangeMaskInput, setRangeMaskInput] = useState("");
   const [detailsEndpointId, setDetailsEndpointId] = useState<string | null>(null);
   const [detailsServiceId, setDetailsServiceId] = useState<string | null>(null);
+  // An endpoint to scroll to and flash, named by the page's `?highlight=` (set by the device
+  // search's "Jump to Page"). Read from the location directly, once, so this component stays
+  // usable without a router.
+  const [highlightedEndpointId, setHighlightedEndpointId] = useState<string | null>(() =>
+    readAssetsHighlight(window.location.search),
+  );
   // Presentation only: the same endpoints, either as the accordion list or as tiles on a canvas.
-  const [viewMode, setViewMode] = useState<AssetsViewMode>(loadViewMode);
+  // Arriving for a highlight always shows the list, where the endpoint can be flashed (this is
+  // not persisted as the user's preference).
+  const [viewMode, setViewMode] = useState<AssetsViewMode>(() =>
+    highlightedEndpointId ? "list" : loadViewMode(),
+  );
   const changeViewMode = (mode: AssetsViewMode) => {
     setViewMode(mode);
     saveViewMode(mode);
@@ -466,6 +477,8 @@ function OverviewContent({ deviceId, contextKey, onRetry }: {
             onOpenDetails={setDetailsEndpointId}
             onOpenServiceDetails={setDetailsServiceId}
             viewToggle={viewToggle}
+            highlightedEndpointId={highlightedEndpointId}
+            onHighlightDone={() => setHighlightedEndpointId(null)}
           />
           <UnidentifiedEndpointsCard endpoints={unidentified} deviceId={deviceId} onEndpointCreated={handleRefresh} />
         </>
